@@ -1,0 +1,78 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+ul[class],
+ol[class] {
+	padding: 0;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+ul[class],
+ol[class],
+li,
+figure,
+figcaption,
+blockquote,
+dl,
+dd {
+	margin: 0;
+}
+
+ul[class],
+ol[class] {
+	list-style: none;
+}
+
+a:not([class]) {
+	text-decoration-skip-ink: auto;
+}
+
+img {
+	max-width: 100%;
+	display: block;
+}
+
+article > * + * {
+	margin-top: 1em;
+}
+
+input,
+button,
+textarea,
+select {
+	font: inherit;
+}
+
+textarea,
+input {
+	border: 2px solid rgb(124, 57, 233, 0.8);
+	border-radius: 5px;
+	background-color: rgb(14, 14, 14);
+	color: #fff;
+	padding-left: 10px;
+	height: 30px;
+}
+
+textarea {
+	height: 80px;
+	max-height: 130px;
+}
+
+body {
+	background-color: #333;
+	color: #fff;
+	font-family: 'Nunito', sans-serif;
+
+	min-height: 100vh;
+	scroll-behavior: smooth;
+	text-rendering: optimizeSpeed;
+	line-height: 1.5;
+}

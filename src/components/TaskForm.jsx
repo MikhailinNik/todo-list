@@ -1,24 +1,28 @@
 import React from 'react';
 
-import NewTask from './NewTask';
-
 function TaskForm({ onSubmit }) {
 	const [value, setValue] = React.useState('');
+	const [id, setId] = React.useState(1);
 
 	const onChangeInput = evt => {
 		setValue(evt.target.value);
 	};
 
-	const onClickBtn = evt => {
+	const onSubmitForm = evt => {
 		evt.preventDefault();
+		setId(id + 1);
 
 		onSubmit({
-			id: count++,
-			text: value,
+			id: id,
+			title: value,
+			description: '',
+			nameFile: '',
 		});
+
+		setValue('');
 	};
 	return (
-		<form className="form" onSubmit={evt => onClickBtn(evt)}>
+		<form className="form" onSubmit={evt => onSubmitForm(evt)}>
 			<input
 				type="text"
 				placeholder="Write your task..."

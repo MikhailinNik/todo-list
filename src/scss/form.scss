@@ -1,0 +1,9 @@
+form {
+	button {
+		cursor: pointer;
+		&:hover {
+			transition: ease-in-out 0.2s;
+			transform: scale(0.98);
+		}
+	}
+}
