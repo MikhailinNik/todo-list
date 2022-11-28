@@ -11,7 +11,7 @@ function App() {
 	const [editingTitle, setEditingTitle] = React.useState('');
 	const [editTodo, setEditTodo] = React.useState(null);
 	const [selectedFile, setSelectedFile] = React.useState(null);
-	const [nameFile, setNameFile] = React.useState('Choose file');
+	const [nameFile, setNameFile] = React.useState('');
 
 	const addTask = task => {
 		const newTask = [task, ...tasks];
@@ -39,7 +39,7 @@ function App() {
 		setEditingText('');
 		setEditingTitle('');
 		setEditTodo(null);
-		setNameFile(nameFile);
+		setNameFile('');
 	};
 
 	return (
@@ -54,6 +54,7 @@ function App() {
 						description={task.description}
 						value={task.title}
 						file={task.nameFile}
+						time={task.time}
 						nameFile={nameFile}
 						setNameFile={setNameFile}
 						onClickDelete={() => onClickDelete(task.id)}

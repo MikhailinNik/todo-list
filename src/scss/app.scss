@@ -81,38 +81,6 @@
 	}
 }
 
-.form {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin: 20px 0 10px 0;
-
-	input {
-		width: 80%;
-		min-width: 10%;
-		border: 2px solid #7c39e9cc;
-		border-radius: 5px;
-		background-color: rgb(14, 14, 14);
-		color: #fff;
-		padding-left: 10px;
-		height: 30px;
-		margin-right: 10px;
-	}
-
-	button {
-		border: none;
-		background-color: rgb(124, 57, 233, 0.8);
-		border-radius: 5px;
-		height: 30px;
-		cursor: pointer;
-
-		&:hover {
-			transition: ease-in-out 0.3s;
-			background-color: rgb(124, 57, 233);
-		}
-	}
-}
-
 .file {
 	border-radius: 10px;
 

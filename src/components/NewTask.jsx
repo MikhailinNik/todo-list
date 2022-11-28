@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { format, intervalToDuration } from 'date-fns';
+
 function NewTask({
 	id,
 	value,
@@ -14,18 +16,27 @@ function NewTask({
 	setEditingText,
 	setEditTodo,
 	nameFile,
+	time,
 	setNameFile,
 }) {
 	const [checking, setChecking] = React.useState('');
 	const [isDone, setIsDone] = React.useState(false);
-	const [date, setDate] = React.useState();
+	const [countTime, setCountTime] = React.useState('');
 
+	const checkRef = React.useRef('');
 	const picker = React.useRef();
+
+	const userTime = new Date(time);
+	const result = intervalToDuration({
+		start: userTime,
+		end: new Date(),
+	});
 
 	const onClickEditTask = id => {
 		setEditingTitle(value);
 		setEditingText(description);
 		setEditTodo(id);
+		setNameFile(file);
 
 		if (editTodo === id) {
 			setEditTodo(null);
@@ -37,12 +48,12 @@ function NewTask({
 		setIsDone(current => !current);
 	};
 
-	const onClickFile = evt => {
-		picker.current.click();
-		evt.target.text = nameFile;
-		console.log(file);
-		console.log(nameFile);
-	};
+	React.useEffect(() => {
+		setTimeout(() => {
+			setIsDone(true);
+			setChecking((checkRef.current.checked = true));
+		}, result.seconds * 1000);
+	});
 
 	return (
 		<div
@@ -52,7 +63,12 @@ function NewTask({
 				backgroundColor: isDone ? '#2c2c2ccc' : '#7c39e9cc',
 			}}>
 			<label className="checkbox">
-				<input type="checkbox" onChange={evt => onChangeTask(evt)} checked={checking} />
+				<input
+					ref={checkRef}
+					type="checkbox"
+					onChange={evt => onChangeTask(evt)}
+					checked={checking}
+				/>
 				<span className="checkmark"></span>
 			</label>
 			<div className="task__name">
@@ -70,11 +86,13 @@ function NewTask({
 							value={editingText}
 							onChange={evt => setEditingText(evt.target.value)}
 						/>
-						<button className="file" onClick={evt => onClickFile(evt)}>
-							{nameFile !== '' ? file : 'Choose file'}
+						<button className="file" onClick={() => picker.current.click()}>
+							{file === '' ? 'Choose file' : file}
 						</button>
 						<input
-							onChange={evt => setNameFile(evt.target.files[0].name)}
+							onChange={evt =>
+								evt.target.files.length ? setNameFile(evt.target.files[0].name) : 'Choose file'
+							}
 							className="hidden"
 							type="file"
 							accept="image/*"
@@ -85,9 +103,8 @@ function NewTask({
 					<>
 						<h2>{value}</h2>
 						<p>{description}</p>
+						<p>Дата завершения: {format(new Date(userTime), 'dd.MM.yyyy HH:mm').toString()}</p>
 						<p>{file}</p>
-
-						{/* <img src={ } alt={} /> */}
 					</>
 				)}
 			</div>
