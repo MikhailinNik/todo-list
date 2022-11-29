@@ -2,6 +2,8 @@ import React from 'react';
 
 import { format, intervalToDuration } from 'date-fns';
 
+import { Context } from '../index';
+
 function NewTask({
 	id,
 	value,
@@ -19,10 +21,10 @@ function NewTask({
 	time,
 	setNameFile,
 }) {
+	const { firestore } = React.useContext(Context);
+
 	const [checking, setChecking] = React.useState('');
 	const [isDone, setIsDone] = React.useState(false);
-	const [countTime, setCountTime] = React.useState('');
-
 	const checkRef = React.useRef('');
 	const picker = React.useRef();
 

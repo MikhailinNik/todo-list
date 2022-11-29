@@ -1,6 +1,11 @@
 import React from 'react';
 
-function TaskForm({ onSubmit }) {
+import { setDoc, doc } from 'firebase/firestore';
+
+import { Context } from '../index';
+
+function TaskForm() {
+	const { db } = React.useContext(Context);
 	const [value, setValue] = React.useState('');
 	const [id, setId] = React.useState(1);
 	const [date, setDate] = React.useState(new Date());
@@ -9,17 +14,22 @@ function TaskForm({ onSubmit }) {
 		setValue(evt.target.value);
 	};
 
-	const onSubmitForm = evt => {
+	const onSubmitForm = async evt => {
 		evt.preventDefault();
+
 		setId(id + 1);
 
-		onSubmit({
-			id: id,
-			title: value,
-			description: '',
-			nameFile: '',
-			time: date,
-		});
+		try {
+			await setDoc(doc(db, 'tasks', 'task' + id), {
+				taskId: id,
+				title: value,
+				description: '',
+				time: date,
+				file: '',
+			});
+		} catch (error) {
+			console.log('ERROR: ' + error);
+		}
 
 		setValue('');
 	};
@@ -36,6 +46,7 @@ function TaskForm({ onSubmit }) {
 				<div className="form__date-end">
 					<span>Дата завершения:</span>
 					<input
+						required="required"
 						className="form__date"
 						type="datetime-local"
 						onChange={evt => setDate(evt.target.value)}
