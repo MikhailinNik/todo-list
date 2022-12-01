@@ -5,6 +5,7 @@ import App from './App';
 import firebase from 'firebase/compat/app';
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 import 'firebase/compat/firestore';
 
 const firebaseApp = initializeApp({
@@ -18,6 +19,7 @@ const firebaseApp = initializeApp({
 });
 
 export const db = getFirestore(firebaseApp);
+export const storage = getStorage(firebaseApp);
 
 export const Context = React.createContext(null);
 
@@ -28,6 +30,7 @@ root.render(
 			value={{
 				firebase,
 				db,
+				storage,
 			}}>
 			<App />
 		</Context.Provider>

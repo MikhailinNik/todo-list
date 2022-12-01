@@ -25,7 +25,7 @@ function TaskForm() {
 				title: value,
 				description: '',
 				time: date,
-				file: '',
+				nameFile: '',
 			});
 		} catch (error) {
 			console.log('ERROR: ' + error);

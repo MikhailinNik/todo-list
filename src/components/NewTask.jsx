@@ -2,12 +2,11 @@ import React from 'react';
 
 import { format, intervalToDuration } from 'date-fns';
 
-import { Context } from '../index';
+import EditTask from './EditTask';
 
 function NewTask({
 	id,
 	value,
-	file,
 	onClickDelete,
 	description,
 	onEdit,
@@ -17,16 +16,16 @@ function NewTask({
 	setEditingTitle,
 	setEditingText,
 	setEditTodo,
-	nameFile,
 	time,
-	setNameFile,
+	setSelectedFile,
+	selectedFile,
+	nameFile,
+	imgUrl,
 }) {
-	const { firestore } = React.useContext(Context);
-
 	const [checking, setChecking] = React.useState('');
 	const [isDone, setIsDone] = React.useState(false);
+	const [url, setUrl] = React.useState('');
 	const checkRef = React.useRef('');
-	const picker = React.useRef();
 
 	const userTime = new Date(time);
 	const result = intervalToDuration({
@@ -38,7 +37,6 @@ function NewTask({
 		setEditingTitle(value);
 		setEditingText(description);
 		setEditTodo(id);
-		setNameFile(file);
 
 		if (editTodo === id) {
 			setEditTodo(null);
@@ -61,7 +59,7 @@ function NewTask({
 		<div
 			className="container__task"
 			style={{
-				height: editTodo === id ? '170px' : '130px',
+				height: editTodo === id ? '170px' : '280px',
 				backgroundColor: isDone ? '#2c2c2ccc' : '#7c39e9cc',
 			}}>
 			<label className="checkbox">
@@ -74,40 +72,31 @@ function NewTask({
 				<span className="checkmark"></span>
 			</label>
 			<div className="task__name">
-				{/* Создать отдельный компонент формы  */}
 				{editTodo === id ? (
-					<>
-						<input
-							type="text"
-							onChange={evt => setEditingTitle(evt.target.value)}
-							value={editingTitle}
-						/>
-						<textarea
-							rows={5}
-							cols={50}
-							value={editingText}
-							onChange={evt => setEditingText(evt.target.value)}
-						/>
-						<button className="file" onClick={() => picker.current.click()}>
-							{file === '' ? 'Choose file' : file}
-						</button>
-						<input
-							onChange={evt =>
-								evt.target.files.length ? setNameFile(evt.target.files[0].name) : 'Choose file'
-							}
-							className="hidden"
-							type="file"
-							accept="image/*"
-							ref={picker}
-						/>
-					</>
+					<EditTask
+						id={id}
+						editingTitle={editingTitle}
+						setEditingTitle={setEditingTitle}
+						editingText={editingText}
+						setEditingText={setEditingText}
+						setSelectedFile={setSelectedFile}
+						selectedFile={selectedFile}
+						setUrl={setUrl}
+						nameFile={nameFile}
+					/>
 				) : (
-					<>
+					<div className="task__edited">
 						<h2>{value}</h2>
 						<p>{description}</p>
 						<p>Дата завершения: {format(new Date(userTime), 'dd.MM.yyyy HH:mm').toString()}</p>
-						<p>{file}</p>
-					</>
+						{nameFile !== '' ? (
+							<img src={imgUrl} alt="" width={200} height={100} />
+						) : url === '' ? (
+							''
+						) : (
+							<img src={url} alt="" width={200} height={100} />
+						)}
+					</div>
 				)}
 			</div>
 			<div className="task__edit">

@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { collection, deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { ref, getMetadata, getDownloadURL } from 'firebase/storage';
 
 import './scss/index.scss';
 
@@ -11,18 +12,41 @@ import NewTask from './components/NewTask';
 import { Context } from './index';
 
 function App() {
-	const { db } = React.useContext(Context);
-
+	const { db, storage } = React.useContext(Context);
 	const [editingText, setEditingText] = React.useState('');
 	const [editingTitle, setEditingTitle] = React.useState('');
 	const [editTodo, setEditTodo] = React.useState(null);
 	const [selectedFile, setSelectedFile] = React.useState(null);
-	const [nameFile, setNameFile] = React.useState('');
+	const [imgUrl, setImgUrl] = React.useState('');
 	const [tasks, loading, error] = useCollectionData(collection(db, 'tasks'));
 
-	if (loading) {
-		return alert('LOADING');
-	}
+	React.useEffect(() => {
+		if (loading) {
+			return alert('LOADING');
+		}
+
+		const storageRef = ref(storage);
+		tasks.forEach(task => {
+			console.log(task);
+			if (task.nameFile !== '') {
+				const imageRef = ref(storageRef, 'images/' + task.nameFile);
+				console.log('task: ' + task.taskId + imageRef);
+				getDownloadURL(ref(imageRef))
+					.then(url => {
+						setImgUrl(url);
+						const xhr = new XMLHttpRequest();
+
+						xhr.responseType = 'blob';
+						xhr.onload = event => {
+							const blob = xhr.response;
+						};
+						xhr.open('GET', url);
+						xhr.send();
+					})
+					.catch(error => console.log('ERROR downloadURL: ' + error));
+			}
+		});
+	});
 
 	const onClickDelete = async id => {
 		try {
@@ -41,10 +65,20 @@ function App() {
 			const updateObject = {
 				description: editingText ? editingText : '',
 				title: editingTitle ? editingTitle : '',
-				file: nameFile ? nameFile : '',
 			};
 
 			await updateDoc(collectionRef, updateObject);
+
+			const storageRef = ref(storage);
+			const fileRef = ref(storageRef, 'images/');
+
+			await getMetadata(fileRef)
+				.then(metadata => {
+					console.log('metadata' + metadata);
+				})
+				.catch(error => {
+					console.log('ERROR: ' + error);
+				});
 		} catch (error) {
 			console.log('ERROR: ' + error);
 		}
@@ -52,7 +86,7 @@ function App() {
 		setEditingText('');
 		setEditingTitle('');
 		setEditTodo(null);
-		setNameFile('');
+		setSelectedFile(null);
 	};
 
 	return (
@@ -60,26 +94,28 @@ function App() {
 			<h1>ToDo List</h1>
 			<TaskForm />
 			<div className="container">
-				{tasks.map((task, index) => (
-					<NewTask
-						id={task.taskId}
-						key={index}
-						description={task.description}
-						value={task.title}
-						file={task.nameFile}
-						time={task.time}
-						nameFile={nameFile}
-						setNameFile={setNameFile}
-						onClickDelete={() => onClickDelete(task.taskId)}
-						onEdit={() => editingTodo(task.taskId)}
-						editTodo={editTodo}
-						editingText={editingText}
-						editingTitle={editingTitle}
-						setEditingTitle={setEditingTitle}
-						setEditingText={setEditingText}
-						setEditTodo={setEditTodo}
-					/>
-				))}
+				{tasks &&
+					tasks.map((task, index) => (
+						<NewTask
+							id={task.taskId}
+							key={index}
+							description={task.description}
+							value={task.title}
+							time={task.time}
+							nameFile={task.nameFile}
+							onClickDelete={() => onClickDelete(task.taskId)}
+							onEdit={() => editingTodo(task.taskId)}
+							editTodo={editTodo}
+							editingText={editingText}
+							editingTitle={editingTitle}
+							setEditingTitle={setEditingTitle}
+							setEditingText={setEditingText}
+							setEditTodo={setEditTodo}
+							selectedFile={selectedFile}
+							setSelectedFile={setSelectedFile}
+							imgUrl={imgUrl}
+						/>
+					))}
 			</div>
 		</div>
 	);
