@@ -65,31 +65,7 @@ function NewTask({
 		getCheckedTask();
 	};
 
-	// const showImages = () => {
-	// 	try {
-	// 		const storageRef = ref(storage);
-	// 		if (nameFile !== '') {
-	// 			const imageRef = ref(storageRef, 'images/' + nameFile);
-	// 			getDownloadURL(ref(imageRef))
-	// 				.then(url => {
-	// 					setImgUrl(url);
-	// 					const xhr = new XMLHttpRequest();
-
-	// 					xhr.responseType = 'blob';
-
-	// 					xhr.open('GET', url);
-	// 					xhr.send();
-	// 				})
-	// 				.catch(error => console.log('ERROR downloadURL: ' + error));
-	// 		}
-	// 	} catch (error) {
-	// 		console.log(error);
-	// 	}
-	// };
-
 	React.useEffect(() => {
-		// showImages();
-
 		const getMilliseconds = () => {
 			const totalMilliseconds =
 				(result.years * 31536000 +
