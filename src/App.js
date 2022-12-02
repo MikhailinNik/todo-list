@@ -17,7 +17,6 @@ function App() {
 	const [editingTitle, setEditingTitle] = React.useState('');
 	const [editTodo, setEditTodo] = React.useState(null);
 	const [selectedFile, setSelectedFile] = React.useState(null);
-	const [imgUrl, setImgUrl] = React.useState('');
 	const [newNameFile, setNewNameFile] = React.useState('');
 	const [tasks, loading, error] = useCollectionData(collection(db, 'tasks'));
 
@@ -34,11 +33,10 @@ function App() {
 			const storageRef = ref(storage);
 			tasks.forEach(task => {
 				if (task.nameFile !== '') {
-					const imageRef = ref(storageRef, 'images/' + task.nameFile);
+					const imageRef = ref(storageRef, 'images/' + task.filePath);
 
 					getDownloadURL(ref(imageRef))
 						.then(url => {
-							setImgUrl(url);
 							const xhr = new XMLHttpRequest();
 
 							xhr.responseType = 'blob';
@@ -47,8 +45,6 @@ function App() {
 							xhr.send();
 						})
 						.catch(error => console.log('ERROR downloadURL: ' + error));
-
-					setImgUrl('');
 				}
 			});
 		} catch (error) {
@@ -124,11 +120,10 @@ function App() {
 							setEditTodo={setEditTodo}
 							selectedFile={selectedFile}
 							setSelectedFile={setSelectedFile}
-							imgUrl={imgUrl}
-							setImgUrl={setImgUrl}
 							isCheck={task.isDone}
 							newNameFile={newNameFile}
 							setNewNameFile={setNewNameFile}
+							filePath={task.filePath}
 						/>
 					))}
 			</div>

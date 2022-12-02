@@ -23,12 +23,14 @@ export default function EditTask({
 
 		const storageRef = ref(storage);
 		const imageRef = ref(storageRef, 'images/' + evt.target.files[0].name);
+		const taskRef = doc(db, 'tasks', `task${id}`);
 
 		uploadBytes(imageRef, evt.target.files[0]);
 
 		getDownloadURL(ref(imageRef))
 			.then(url => {
-				setUrl(url);
+				updateDoc(taskRef, { filePath: url }, { merge: true });
+
 				console.log(url);
 				console.log(nameFile);
 
@@ -41,7 +43,6 @@ export default function EditTask({
 			})
 			.catch(error => console.log('ERROR downloadURL: ' + error));
 
-		const taskRef = doc(db, 'tasks', `task${id}`);
 		updateDoc(taskRef, { nameFile: evt.target.files[0].name }, { merge: true });
 	};
 

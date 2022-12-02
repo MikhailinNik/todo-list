@@ -24,13 +24,12 @@ function NewTask({
 	setSelectedFile,
 	selectedFile,
 	nameFile,
-	imgUrl,
 	setImgUrl,
 	isCheck,
 	setNewNameFile,
-	newNameFile,
+	filePath,
 }) {
-	const { storage, db } = React.useContext(Context);
+	const { db } = React.useContext(Context);
 	const [checking, setChecking] = React.useState('');
 	const [isDone, setIsDone] = React.useState(false);
 	const [url, setUrl] = React.useState('');
@@ -80,14 +79,12 @@ function NewTask({
 		};
 
 		setTimeout(() => {
-			// setIsDone(true);
-			// setChecking((checkRef.current.checked = true));
+			setIsDone(true);
+			setChecking((checkRef.current.checked = true));
 
 			getCheckedTask();
 		}, getMilliseconds());
 	}, [id]);
-
-	console.log(imgUrl);
 
 	return (
 		<div
@@ -101,7 +98,7 @@ function NewTask({
 					ref={checkRef}
 					type="checkbox"
 					onChange={evt => onChangeTask(evt)}
-					checked={checking}
+					checked={isCheck ? checking : ''}
 				/>
 				<span className="checkmark"></span>
 			</label>
@@ -124,7 +121,7 @@ function NewTask({
 						<h2>{value}</h2>
 						<p>{description}</p>
 						<p>Дата завершения: {format(new Date(userTime), 'dd.MM.yyyy HH:mm').toString()}</p>
-						{nameFile !== '' ? <img src={imgUrl} alt="" width={200} height={100} /> : ''}
+						{nameFile !== '' ? <img src={filePath} alt="" width={200} height={100} /> : ''}
 					</div>
 				)}
 			</div>
