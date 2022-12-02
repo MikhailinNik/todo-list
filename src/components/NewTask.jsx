@@ -1,8 +1,12 @@
 import React from 'react';
 
+import { ref, getDownloadURL } from 'firebase/storage';
+import { doc, updateDoc } from 'firebase/firestore';
+
 import { format, intervalToDuration } from 'date-fns';
 
 import EditTask from './EditTask';
+import { Context } from '..';
 
 function NewTask({
 	id,
@@ -21,7 +25,12 @@ function NewTask({
 	selectedFile,
 	nameFile,
 	imgUrl,
+	setImgUrl,
+	isCheck,
+	setNewNameFile,
+	newNameFile,
 }) {
+	const { storage, db } = React.useContext(Context);
 	const [checking, setChecking] = React.useState('');
 	const [isDone, setIsDone] = React.useState(false);
 	const [url, setUrl] = React.useState('');
@@ -33,10 +42,16 @@ function NewTask({
 		end: new Date(),
 	});
 
+	const getCheckedTask = () => {
+		const taskRef = doc(db, 'tasks', `task${id}`);
+		return updateDoc(taskRef, { isDone: true }, { merge: true });
+	};
+
 	const onClickEditTask = id => {
 		setEditingTitle(value);
 		setEditingText(description);
 		setEditTodo(id);
+		setImgUrl(url);
 
 		if (editTodo === id) {
 			setEditTodo(null);
@@ -46,14 +61,57 @@ function NewTask({
 	const onChangeTask = evt => {
 		setChecking(evt.target.checked);
 		setIsDone(current => !current);
+
+		getCheckedTask();
 	};
 
+	// const showImages = () => {
+	// 	try {
+	// 		const storageRef = ref(storage);
+	// 		if (nameFile !== '') {
+	// 			const imageRef = ref(storageRef, 'images/' + nameFile);
+	// 			getDownloadURL(ref(imageRef))
+	// 				.then(url => {
+	// 					setImgUrl(url);
+	// 					const xhr = new XMLHttpRequest();
+
+	// 					xhr.responseType = 'blob';
+
+	// 					xhr.open('GET', url);
+	// 					xhr.send();
+	// 				})
+	// 				.catch(error => console.log('ERROR downloadURL: ' + error));
+	// 		}
+	// 	} catch (error) {
+	// 		console.log(error);
+	// 	}
+	// };
+
 	React.useEffect(() => {
+		// showImages();
+
+		const getMilliseconds = () => {
+			const totalMilliseconds =
+				(result.years * 31536000 +
+					result.months * 2629746 +
+					result.days * 86400 +
+					result.hours * 3600 +
+					result.minutes * 60 +
+					result.seconds) *
+				1000;
+
+			return totalMilliseconds;
+		};
+
 		setTimeout(() => {
-			setIsDone(true);
-			setChecking((checkRef.current.checked = true));
-		}, result.seconds * 1000);
-	});
+			// setIsDone(true);
+			// setChecking((checkRef.current.checked = true));
+
+			getCheckedTask();
+		}, getMilliseconds());
+	}, [id]);
+
+	console.log(imgUrl);
 
 	return (
 		<div
@@ -83,19 +141,14 @@ function NewTask({
 						selectedFile={selectedFile}
 						setUrl={setUrl}
 						nameFile={nameFile}
+						setNewNameFile={setNewNameFile}
 					/>
 				) : (
 					<div className="task__edited">
 						<h2>{value}</h2>
 						<p>{description}</p>
 						<p>Дата завершения: {format(new Date(userTime), 'dd.MM.yyyy HH:mm').toString()}</p>
-						{nameFile !== '' ? (
-							<img src={imgUrl} alt="" width={200} height={100} />
-						) : url === '' ? (
-							''
-						) : (
-							<img src={url} alt="" width={200} height={100} />
-						)}
+						{nameFile !== '' ? <img src={imgUrl} alt="" width={200} height={100} /> : ''}
 					</div>
 				)}
 			</div>

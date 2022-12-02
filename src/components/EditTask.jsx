@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 import { Context } from '../index';
@@ -10,8 +10,7 @@ export default function EditTask({
 	setEditingTitle,
 	editingText,
 	setEditingText,
-	// setSelectedFile,
-	// selectedFile,
+	setNewNameFile,
 	setUrl,
 	nameFile,
 	id,
@@ -20,10 +19,12 @@ export default function EditTask({
 	const picker = React.useRef();
 
 	const onChangeFile = evt => {
+		setNewNameFile(evt.target.files[0].name);
+
 		const storageRef = ref(storage);
 		const imageRef = ref(storageRef, 'images/' + evt.target.files[0].name);
 
-		uploadBytes(imageRef, evt.target.files[0]).then(snapshot => {});
+		uploadBytes(imageRef, evt.target.files[0]);
 
 		getDownloadURL(ref(imageRef))
 			.then(url => {
@@ -34,9 +35,7 @@ export default function EditTask({
 				const xhr = new XMLHttpRequest();
 
 				xhr.responseType = 'blob';
-				xhr.onload = event => {
-					const blob = xhr.response;
-				};
+
 				xhr.open('GET', url);
 				xhr.send();
 			})

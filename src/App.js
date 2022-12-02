@@ -18,6 +18,7 @@ function App() {
 	const [editTodo, setEditTodo] = React.useState(null);
 	const [selectedFile, setSelectedFile] = React.useState(null);
 	const [imgUrl, setImgUrl] = React.useState('');
+	const [newNameFile, setNewNameFile] = React.useState('');
 	const [tasks, loading, error] = useCollectionData(collection(db, 'tasks'));
 
 	React.useEffect(() => {
@@ -25,28 +26,35 @@ function App() {
 			return alert('LOADING');
 		}
 
-		const storageRef = ref(storage);
-		tasks.forEach(task => {
-			console.log(task);
-			if (task.nameFile !== '') {
-				const imageRef = ref(storageRef, 'images/' + task.nameFile);
-				console.log('task: ' + task.taskId + imageRef);
-				getDownloadURL(ref(imageRef))
-					.then(url => {
-						setImgUrl(url);
-						const xhr = new XMLHttpRequest();
+		showImages();
+	}, [tasks]);
 
-						xhr.responseType = 'blob';
-						xhr.onload = event => {
-							const blob = xhr.response;
-						};
-						xhr.open('GET', url);
-						xhr.send();
-					})
-					.catch(error => console.log('ERROR downloadURL: ' + error));
-			}
-		});
-	});
+	function showImages() {
+		try {
+			const storageRef = ref(storage);
+			tasks.forEach(task => {
+				if (task.nameFile !== '') {
+					const imageRef = ref(storageRef, 'images/' + task.nameFile);
+
+					getDownloadURL(ref(imageRef))
+						.then(url => {
+							setImgUrl(url);
+							const xhr = new XMLHttpRequest();
+
+							xhr.responseType = 'blob';
+
+							xhr.open('GET', url);
+							xhr.send();
+						})
+						.catch(error => console.log('ERROR downloadURL: ' + error));
+
+					setImgUrl('');
+				}
+			});
+		} catch (error) {
+			console.log(error);
+		}
+	}
 
 	const onClickDelete = async id => {
 		try {
@@ -58,13 +66,15 @@ function App() {
 
 	const editingTodo = async id => {
 		try {
-			if (!id) return false;
+			if (!id) {
+				return false;
+			}
 
 			const collectionRef = doc(db, 'tasks', 'task' + id);
-
 			const updateObject = {
 				description: editingText ? editingText : '',
 				title: editingTitle ? editingTitle : '',
+				nameFile: newNameFile ? newNameFile : '',
 			};
 
 			await updateDoc(collectionRef, updateObject);
@@ -74,7 +84,7 @@ function App() {
 
 			await getMetadata(fileRef)
 				.then(metadata => {
-					console.log('metadata' + metadata);
+					console.log('metadata: ' + metadata);
 				})
 				.catch(error => {
 					console.log('ERROR: ' + error);
@@ -87,6 +97,7 @@ function App() {
 		setEditingTitle('');
 		setEditTodo(null);
 		setSelectedFile(null);
+		setNewNameFile('');
 	};
 
 	return (
@@ -114,6 +125,10 @@ function App() {
 							selectedFile={selectedFile}
 							setSelectedFile={setSelectedFile}
 							imgUrl={imgUrl}
+							setImgUrl={setImgUrl}
+							isCheck={task.isDone}
+							newNameFile={newNameFile}
+							setNewNameFile={setNewNameFile}
 						/>
 					))}
 			</div>
